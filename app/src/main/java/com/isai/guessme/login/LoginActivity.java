@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,21 +17,28 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.SignInAccount;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.isai.guessme.R;
+import com.isai.guessme.home.HomeActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private int RC_SIGN_IN = 100;
     SignInButton btnSign;
+    private static final String EMAIL="email";
+    private static final String NAME="name";
+    Button btnSignOut;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         btnSign = (SignInButton) findViewById(R.id.btn_sign_in);
+        btnSignOut=findViewById(R.id.btn_sign_out);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestIdToken(getString(R.string.google_id))
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         btnSign.setSize(SignInButton.SIZE_STANDARD);
@@ -50,7 +59,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUI(GoogleSignInAccount account) {
-
+        if (account!=null){
+            Intent intent=new Intent(LoginActivity.this, HomeActivity.class);
+            intent.putExtra(EMAIL,account.getEmail());
+            intent.putExtra(NAME,account.getDisplayName());
+            startActivity(intent);
+            btnSignOut.setVisibility(View.VISIBLE);
+            btnSign.setVisibility(View.GONE);
+        }else {
+            btnSign.setVisibility(View.VISIBLE);
+        }
     }
 
     private void signIn() {
@@ -77,9 +95,17 @@ public class LoginActivity extends AppCompatActivity {
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.e("ApiException",e.toString()+e.getMessage());
             updateUI(null);
         }
+    }
+    private void signOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                    }
+                });
     }
 }

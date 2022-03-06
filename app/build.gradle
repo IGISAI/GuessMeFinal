@@ -44,5 +44,9 @@ dependencies {
      testImplementation "android.arch.persistence.room:testing:1.1.1"
      annotationProcessor 'androidx.room:room-compiler:2.4.2'*/
 
+    implementation platform('com.google.firebase:firebase-bom:29.1.0')
+    implementation 'com.google.firebase:firebase-analytics'
+
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
 }
+apply plugin: 'com.google.gms.google-services'

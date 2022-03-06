@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GuessMe</string>
+    <string name="tell_me_about_yourself">Tell me About Yourself?</string>
+</resources>
